@@ -8,7 +8,7 @@ on:
 jobs:
   # Giai đoạn 1: Job kiểm thử (Unit Test)
   test_job:
-    runs-on: [self-hosted, quickbite]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,10 +24,10 @@ jobs:
           chmod +x ./gradlew
           ./gradlew test
 
-  # Giai đoạn 2: Job build (Chỉ chạy khi test_job thành công)
+  # Giai đoạn 2: Job build (Chỉ chạy khi test_job thành công nhờ từ khóa needs)
   build_job:
-    needs: test_job # Cơ chế Job Isolation & Sequential Workflow: Bắt buộc test_job phải Passed thì job này mới chạy
-    runs-on: [self-hosted, quickbite]
+    needs: test_job
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Cấp quyền thực thi Gradle Wrapper và Build Jar
+      - name: Build Jar
         run: |
           chmod +x ./gradlew
           ./gradlew bootJar
